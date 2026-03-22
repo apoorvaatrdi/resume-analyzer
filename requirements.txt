@@ -1,0 +1,4 @@
+flask 
+docx2txt 
+fpdf 
+openai 

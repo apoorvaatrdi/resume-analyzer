@@ -1,26 +1,89 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Result</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <title>Resume Analysis Result</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Roboto', sans-serif; background-color: #f0f2f5; }
+        .card { margin-top: 30px; border-radius: 12px; }
+        .score { font-size: 2rem; font-weight: bold; }
+        h2, h3 { color: #0d6efd; }
+        .progress { height: 25px; border-radius: 12px; }
+        .progress-bar { font-weight: bold; line-height: 25px; }
+        .skill-badge { margin-left: 8px; }
+        .suggestion-green { background-color: #d4edda; color: #155724; }
+        .suggestion-orange { background-color: #fff3cd; color: #856404; }
+        .suggestion-red { background-color: #f8d7da; color: #721c24; }
+        .skill-icon { margin-right: 6px; }
+        .card:hover { transform: scale(1.02); transition: 0.3s; }
+    </style>
 </head>
 <body>
-
-    <h1>Resume Analysis Result 📄</h1>
-
-    <div style="width: 80%; margin: auto; background: white; padding: 20px; border-radius: 10px;">
-        
-        <h3>Detected Skills:</h3>
-        <ul>
+    <div class="container">
+        <div class="card p-4 shadow">
+            <h1 class="text-center mb-4">Resume Analysis Result</h1>
+            
+            <h2 class="mb-3">Resume Score: <span class="score">{{ score }}/100 💯</span></h2>
+            <div class="progress mb-4">
+                {% if score >= 80 %}
+                <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{ score }}%">{{ score }}%</div>
+                {% elif score >= 50 %}
+                <div class="progress-bar bg-warning progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{ score }}%">{{ score }}%</div>
+                {% else %}
+                <div class="progress-bar bg-danger progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{ score }}%">{{ score }}%</div>
+                {% endif %}
+            </div>
+            
+            <h3>Detected Skills:</h3>
             {% for skill in skills %}
-                <li>{{ skill }}</li>
+            <div class="mb-2">
+                <span class="skill-icon">
+                    {% if skill == "python" %}🐍{% elif skill == "sql" %}🗄️{% elif skill == "html" %}🌐{% elif skill == "css" %}🎨{% elif skill == "javascript" %}⚡{% else %}💻{% endif %}
+                </span>
+                <strong>{{ skill }}</strong>
+                <span class="badge bg-primary skill-badge">
+                    {% if skill in ["python", "sql"] %}Primary{% else %}Secondary{% endif %}
+                </span>
+                <div class="progress mt-1">
+                    <div class="progress-bar bg-info progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%">{{ skill }}</div>
+                </div>
+            </div>
             {% endfor %}
-        </ul>
-
-        <h3>Extracted Text:</h3>
-        <pre>{{ text }}</pre>
-
+            
+            <h3>Suggestions:</h3>
+            <ul class="list-group mb-3">
+                {% for s in suggestions %}
+                    <li class="list-group-item 
+                        {% if "Learn" in s or "Add project" in s %}suggestion-green{% elif "Try" in s %}suggestion-orange{% else %}suggestion-red{% endif %}">
+                        {{ s }}
+                    </li>
+                {% endfor %}
+            </ul>
+            
+            <h3>Full Resume Text:</h3>
+            <div class="border p-2 mb-3" style="max-height: 200px; overflow-y: auto; background-color: #fff;">
+                <p>{{ text }}</p>
+            </div>
+            
+            <!-- Download PDF -->
+            <form action="/download" method="post">
+                <input type="hidden" name="text" value="{{ text }}">
+                {% for skill in skills %}
+                    <input type="hidden" name="skills" value="{{ skill }}">
+                {% endfor %}
+                {% for s in suggestions %}
+                    <input type="hidden" name="suggestions" value="{{ s }}">
+                {% endfor %}
+                <input type="hidden" name="score" value="{{ score }}">
+                <button type="submit" class="btn btn-success mt-3">Download PDF</button>
+            </form>
+            
+            <div class="d-grid mt-3">
+                <a href="/" class="btn btn-primary">Analyze Another Resume</a>
+            </div>
+        </div>
     </div>
-
 </body>
 </html>
