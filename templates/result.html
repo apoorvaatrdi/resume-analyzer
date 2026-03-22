@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Result</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <h1>Resume Analysis Result 📄</h1>
+
+    <div style="width: 80%; margin: auto; background: white; padding: 20px; border-radius: 10px;">
+        
+        <h3>Detected Skills:</h3>
+        <ul>
+            {% for skill in skills %}
+                <li>{{ skill }}</li>
+            {% endfor %}
+        </ul>
+
+        <h3>Extracted Text:</h3>
+        <pre>{{ text }}</pre>
+
+    </div>
+
+</body>
+</html>
